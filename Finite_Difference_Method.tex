@@ -14,6 +14,8 @@
 \usepackage{amsthm}
 \newtheorem{theorem}{Teorema}
 \newtheorem{lemma}{Lema}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 
 
 
@@ -43,6 +45,16 @@ Maestría en Física\\
 \hspace{10pt}
 
 \normalsize
+\section{Ecuaciones diferenciales parciales elípticas}
+La ecuación diferencial parcial elíptica a considerar es la ecuación de Poisson
+\begin{equation}\label{eq::Poisson}
+\nabla^2 u(x,y)\equiv \frac{\partial^2 u}{\partial x^2}(x,y) + \frac{\partial^2 u}{\partial y^2}(x,y)=f(x,y)
+\end{equation}
+en $R=\{ (x,y)\,\,|\,\, a<x<b ,\, c<y<d \}$, con $u(x,y)=g(x,y) \in S$, donde $S$ denota al contorno de $R$. Si $f$ y $g$ son continuas en su dominio entonces hay una única solución a la ecuación.
+\subsection{Seleccionando un retículo}
+El método a utilizar es una adaptación bidimensional del método de diferencias finitas para problemas con fronteras lineales como se discute en \cite{Burden}. El primer paso es escoger enteros $n$ y $m$ para definir el tamaño de los pasos(\textit{steps}) $h=(b-a)/n$ y $k=(d-c)/m$ particionando de está manera el intervalo $[a,b]$ en $n$ partes iguales de ancho $h$ y el intervalo $[c,d]$ en $m$ partes iguales con ancho $k$ como se puede ver en la figura
+
+
 \section{Método de Diferencias Finitas para ecuaciones elípticas}
 
 
