@@ -32,10 +32,10 @@ Método de Diferencias Finitas\\
 % Author names and affiliations
 \large
 %Lic. Julio A. Medina$^1$ \\
-Julio A. Medina$^1$ \\
+Julio A. Medina\\
 \hspace{10pt}
 \small  
-$^1$ Universidad de San Carlos\\
+Universidad de San Carlos\\
 Escuela de Ciencias Físicas y Matemáticas\\
 Maestría en Física\\
 \href{mailto:julioantonio.medina@gmail.com}{julioantonio.medina@gmail.com}\\
@@ -53,6 +53,18 @@ La ecuación diferencial parcial elíptica a considerar es la ecuación de Poiss
 en $R=\{ (x,y)\,\,|\,\, a<x<b ,\, c<y<d \}$, con $u(x,y)=g(x,y) \in S$, donde $S$ denota al contorno de $R$. Si $f$ y $g$ son continuas en su dominio entonces hay una única solución a la ecuación.
 \subsection{Seleccionando un retículo}
 El método a utilizar es una adaptación bidimensional del método de diferencias finitas para problemas con fronteras lineales como se discute en \cite{Burden}. El primer paso es escoger enteros $n$ y $m$ para definir el tamaño de los pasos(\textit{steps}) $h=(b-a)/n$ y $k=(d-c)/m$ particionando de está manera el intervalo $[a,b]$ en $n$ partes iguales de ancho $h$ y el intervalo $[c,d]$ en $m$ partes iguales con ancho $k$, formando un retículo o cuadricula como se puede ver en la figura
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.29]{./lattice.png} 
+\end{center} 
+\caption{Cuadricula de $n\times m$}
+\label{fig::fig1}
+\end{figure}
+Este reticulo se construye formalmente al dibujar lineas verticales y horizontales sobre el dentro del rectagulo $R$ en los puntos con coordenadas $(x_i, y_j)$, donde
+\begin{equation}
+x_i=a+ih,\,\,\,\text{para cada }i=0,1,2,\hdots,n\,\,\, \text{ y } y=a+jk,\,\,\,\text{para cada }j=0,1,2,\hdots,m
+\end{equation}
 
 
 \section{Método de Diferencias Finitas para ecuaciones elípticas}
