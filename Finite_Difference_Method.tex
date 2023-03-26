@@ -67,8 +67,24 @@ x_i=a+ih,\,\,\,\text{para cada }i=0,1,2,\hdots,n\,\,\, \text{ y } y=a+jk,\,\,\,\
 \end{equation}
 
 
-\section{Método de Diferencias Finitas para ecuaciones elípticas}
+\section{Método de Diferencias Finitas para ecuación de Poisson}
+\subsection{Algoritmo por Factorización de Crout}
+\begin{algorithm}
+\caption{Diferencias finitas para ecuación de Poisson}
+\begin{algorithmic}
+\REQUIRE $a,b,c,d$; enteros $m\geq 3$, $n\geq 3$, tolerancia $TOL$; número máximo de iteraciones $N$
+\STATE $h\leftarrow (b-a)/n$
+\STATE $k\leftarrow (d-c)/m$
+\FOR{$i=1,\hdots,n-1$} 
+\STATE $x_i\leftarrow a+ih$ 
+\ENDFOR
+\FOR{$j=1,\hdots,m-1$} 
+\STATE $y_j\leftarrow c+ik$ 
+\ENDFOR
 
+
+\end{algorithmic}
+\end{algorithm}
 
 
 %En este trabajo de graduación consta de dos partes, en la primera parte se ha realizado una investigación sobre el enfoque de la mecánica estadística en la redes neuronales. En la segunda parte
