@@ -81,6 +81,14 @@ x_i=a+ih,\,\,\,\text{para cada }i=0,1,2,\hdots,n\,\,\, \text{ y } y=a+jk,\,\,\,\
 \FOR{$j=1,\hdots,m-1$} 
 \STATE $y_j\leftarrow c+ik$ 
 \ENDFOR
+\FOR{$i=1,\hdots,n-1$} 
+\FOR{$j=1,\hdots,m-1$} 
+\STATE $w_{ij}\leftarrow 0$
+\ENDFOR
+\ENDFOR
+\STATE $\lambda\leftarrow h^2/k^2$
+\STATE $\mu\leftarrow 2(1+\lambda)$
+\STATE $l\leftarrow 1$
 
 
 \end{algorithmic}
