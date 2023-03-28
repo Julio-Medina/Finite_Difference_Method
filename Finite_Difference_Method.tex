@@ -15,7 +15,9 @@
 \newtheorem{theorem}{Teorema}
 \newtheorem{lemma}{Lema}
 \usepackage{algorithm}
-\usepackage{algorithmic}
+%\usepackage{algorithmic}
+\usepackage{algpseudocode}
+%\usepackage{algorithm2e}
 
 
 
@@ -58,43 +60,103 @@ El método a utilizar es una adaptación bidimensional del método de diferencia
 \begin{center}
 \includegraphics[scale=0.29]{./lattice.png} 
 \end{center} 
-\caption{Cuadricula de $n\times m$}
+\caption{Cuadrícula de $n\times m$}
 \label{fig::fig1}
 \end{figure}
-Este retículo se construye formalmente al dibujar lineas verticales y horizontales sobre el dentro del rectagulo $R$ en los puntos con coordenadas $(x_i, y_j)$, donde
+Este retículo se construye formalmente al dibujar lineas verticales y horizontales sobre el dentro del rectángulo $R$ en los puntos con coordenadas $(x_i, y_j)$, donde
 \begin{equation}
-x_i=a+ih,\,\,\,\text{para cada }i=0,1,2,\hdots,n\,\,\, \text{ y } y=a+jk,\,\,\,\text{para cada }j=0,1,2,\hdots,m
+x_i=a+ih,\,\,\,\text{para cada }i=0,1,2,\hdots,n\, \text{ y }\, y=a+jk,\,\,\,\text{para cada }j=0,1,2,\hdots,m
 \end{equation}
+Las rectas correspondientes a $x=x_i$ y $y=y_i$ son las lineas que forman la cuadricula y sus intersecciones son los puntos del retículo. Para cada punto interior del retículo se $(x_i,y_j)$, para $i=1,2,\hdots,n-1$ y $j=1,2,\hdots,m-1$, se puede utilizar una serie de Taylor en la variable $x$ alrededor del punto $x_i$ para generar una fórmula de diferencia centrada
+\begin{equation}
+\frac{\partial^2 u}{\partial x^2}(x_i,y_i)=\frac{u(x_{i+1},y_j)-2u(x_i,y_i)+u(x_{i-1},y_j)}{h^2}-\frac{h^2}{12}\frac{\partial^4 u}{\partial x^4}(\xi_i,y_j)
+\end{equation}
+donde $\xi_i \in (x_{i-1},x_{i+1})$. De igual manera se puede encontrar la serie de Taylor en la variable $y$ alrededor del punto $y_j$ para hallar la diferencia centrada
+\begin{equation}
+\frac{\partial^2 u}{\partial y^2}(x_i,y_i)=\frac{u(x_{i},y_{j+1})-2u(x_i,y_i)+u(x_{i},y_{j-1})}{k^2}-\frac{k^2}{12}\frac{\partial^4 u}{\partial y^4}(x_i,\eta_j)
+\end{equation}
+donde $\eta_i \in (y_{i-1},y_{i+1})$, sustituyendo estas fórmulas en las ecuación \ref{eq::Poisson} permite expresar la ecuación de Poisson en los puntos $(x_i,y_j)$ como
+\begin{equation}
+\begin{aligned}
+&\frac{u(x_{i+1},y_j)-2u(x_i,y_i)+u(x_{i-1},y_j)}{h^2}+\frac{u(x_{i},y_{j+1})-2u(x_i,y_i)+u(x_{i},y_{j-1})}{k^2}\\
+&=f(x_i,y_j)+\frac{h^2}{12}\frac{\partial^4 u}{\partial x^4}(\xi_i,y_j)+\frac{k^2}{12}\frac{\partial^4 u}{\partial y^4}(x_i,\eta_j)
+\end{aligned}
+\end{equation}
+para cada $i=1,2,\hdots,n-1$ y $j=1,2,\hdots,m-1$. Las condiciones de contorno son
+\begin{equation*}
+u(x_0,y_j)=g(x_0,y_j)\,\, \text{ y } \,\, u(x_n,y_j)=g(x_n,y_j),\,\,\, \text{para cada }j=0,1,\hdots,m;
+\end{equation*}
+\begin{equation*}
+u(x_i,y_0)=g(x_i,y_0)\,\, \text{ y } \,\, u(x_i,y_m)=g(x_i,y_m),\,\,\, \text{para cada }i=1,2,\hdots,n-1;
+\end{equation*}
+ 
+
 
 
 \section{Método de Diferencias Finitas para ecuación de Poisson}
-\subsection{Algoritmo por Factorización de Crout}
-\begin{algorithm}
-\caption{Diferencias finitas para ecuación de Poisson}
-\begin{algorithmic}
-\REQUIRE $a,b,c,d$; enteros $m\geq 3$, $n\geq 3$, tolerancia $TOL$; número máximo de iteraciones $N$
-\STATE $h\leftarrow (b-a)/n$
-\STATE $k\leftarrow (d-c)/m$
-\FOR{$i=1,\hdots,n-1$} 
-\STATE $x_i\leftarrow a+ih$ 
-\ENDFOR
-\FOR{$j=1,\hdots,m-1$} 
-\STATE $y_j\leftarrow c+ik$ 
-\ENDFOR
-\FOR{$i=1,\hdots,n-1$} 
-\FOR{$j=1,\hdots,m-1$} 
-\STATE $w_{ij}\leftarrow 0$
-\ENDFOR
-\ENDFOR
-\STATE $\lambda\leftarrow h^2/k^2$
-\STATE $\mu\leftarrow 2(1+\lambda)$
-\STATE $l\leftarrow 1$
+\subsection{Algoritmo de Generalización Factorización de Crout para matrices tridiagonales por bloques}
 
+\begin{algorithm}[H]
+\caption{Crout Generalization Algorithm for Tridiagonal Block Matrices}
+\begin{algorithmic}[1]
+\Require $A \in \mathbb{R}^{N \times N}$, $K \in \mathbb{R}^{N}$, $n \in \mathbb{N}$
+\Ensure $sol \in \mathbb{R}^{N}$
+\State $N \gets \lfloor \frac{\operatorname{shape}(A)[1]}{n} \rfloor$
+\State $W \gets []$
+\State $B_1 \gets A_{1:n,1:n}$
+\State $C_1 \gets A_{1:n,n:n+n}$
+\State $W.append(\operatorname{inv}(B_1) \cdot C_1)$
+\For{$i \gets 2$ to $N-1$}
+\State $B_i \gets A_{(i-1)n:in,(i-1)n:in}$
+\State $A_i \gets A_{(i-1)n:in,(i-2)n:(i-1)n}$
+\State $C_i \gets A_{(i-1)n:in,in+1:n+(i-1)n}$
+\State $W.append(\operatorname{inv}(B_i - A_i \cdot W_{i-2}) \cdot C_i)$
+\EndFor
+\State $B_N \gets A_{1:n,1:n}$
+\State $K_1 \gets K_{1:n}$
+\State $G_1 \gets \operatorname{inv}(B_1) \cdot K_1$
+\State $G \gets []$
+\State $G.append(G_1)$
+\For{$i \gets 2$ to $N$}
+\State $K_i \gets K_{(i-1)n:in}$
+\State $B_i \gets A_{(i-1)n:in,(i-1)n:in}$
+\State $A_i \gets A_{(i-1)n:in,(i-2)n:(i-1)n}$
+\State $G.append(\operatorname{inv}(B_i - A_i \cdot W_{i-2}) \cdot (K_i - A_i \cdot G_{i-2}))$
+\EndFor
+\State $Z \gets G[:]$
+\For{$i \gets N-2$ to $0$ step $-1$}
+\State $Z_i \gets G_i - W_i \cdot Z_{i+1}$
+\EndFor
+\State $sol \gets \operatorname{concatenate}(Z)$
+\State \textbf{return} $sol$
+\end{algorithmic}
+\end{algorithm}
+\subsection{Método iterativo SOR para resolver sistemas lineales}
+\begin{algorithm}[H]
+%\caption{Método iterativo SOR para resolver sistemas lineales}
+\caption{Iterative SOR method for solving linear systems}
+\begin{algorithmic}[H]
+\Require{$A$ es una $n \times n$ matriz, $b$ es un vector de incógnitas de dimensión $n$, $x^{(0)}$ es una solución propuesta inicial, $\omega$ es el parámetro de relajamiento, $\epsilon$ es la tolerancia, and $max_{iter}$ es el número máximo de iteraciones.}
+\Ensure{$x^{(k+1)}$ es una solución aproximada de $Ax = b$.}
+
+\State $k \gets 0$
+\State $x^{(k)} \gets x^{(0)}$
+\While{$k < max_{iter}$ and $||x^{(k+1)} - x^{(k)}||2 \geq \epsilon$}
+\State $k \gets k+1$
+\For{$i = 1$ to $n$}
+\State $s \gets \sum{j=1}^{i-1} a_{ij}x_j^{(k+1)} + \sum_{j=i+1}^{n} a_{ij}x_j^{(k)}$
+\State $x_i^{(k+1)} \gets (1-\omega) x_i^{(k)} + \frac{\omega}{a_{ii}} (b_i - s)$
+\EndFor
+\EndWhile
+
+\If{$k = max_{iter}$}
+\State \textbf{print} "Se ha alcanzado el número máximo de iteraciones"
+\EndIf
+
+\State \textbf{return} $x^{(k+1)}$
 
 \end{algorithmic}
 \end{algorithm}
-
-
 %En este trabajo de graduación consta de dos partes, en la primera parte se ha realizado una investigación sobre el enfoque de la mecánica estadística en la redes neuronales. En la segunda parte
 \begin{thebibliography}{99}
 %% La bibliografía se ordena en orden alfabético respecto al apellido del 
