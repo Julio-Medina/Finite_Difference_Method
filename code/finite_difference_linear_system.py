@@ -17,15 +17,15 @@ from crout_factorization_generalization import Crout_generalization
 #from scipy.linalg import lu
 
 def f(x,y):
-    return 0
+    return x-y
 
 def g(x,y,a,b,c,d):
     if x==a:
-        return 0
+        return x**2
     if x==b:
         return 200*y
     if y==c:
-        return 0
+        return 2*y+x
     if y==d:
         return 200*x
     
@@ -71,9 +71,10 @@ def finite_difference_linear_system(a,b,c,d, # definition of the 2D region to fi
             w[l(i,j,n,m)]+=-h**2*f(x[i],y[j]) # rhs, Poisson equation term
     
     return W_ij, w # Returns coefficient matrix W_ij and constant vector w to form a linear systems that feeds the Crout-algorithm
+a=0; b=20; c=0; d=100; n=10; m=6
 
-A,w=finite_difference_linear_system(0,0.5,0,0.5,4,4,f,g)
+A,w=finite_difference_linear_system(a,b,c,d,n,m,f,g)
 # solves the system using numpy
 sol=np.linalg.solve(A,w)
 # solves the system using Crout Factorization for block tridiagonal matrices
-sol2=Crout_generalization(A,w,3) 
+sol2=Crout_generalization(A,w,n-1) 
