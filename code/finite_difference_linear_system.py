@@ -12,7 +12,8 @@ Specifically this solves the Poisson Equation by setting f<>0
 """
 
 import numpy as np
-from crout_factorization_generalization import Crout_generalization
+# imports Crout Generalization algorithm implementation
+from crout_factorization_generalization import Crout_generalization 
 #from scipy.linalg import lu
 
 def f(x,y):
@@ -28,7 +29,7 @@ def g(x,y,a,b,c,d):
     if y==d:
         return 200*x
     
-def l(i,j,n,m):
+def l(i,j,n,m): # relabeling function
     return (i+1)+(m-1-(j+1))*(n-1)-1
 
 
@@ -45,31 +46,31 @@ def finite_difference_linear_system(a,b,c,d, # definition of the 2D region to fi
     w=np.zeros((n-1)*(m-1))
     for i in range(n-1):
         for j in range(m-1):
-            W_ij[l(i,j,n,m),l(i,j,n,m)]=2*((h/k)**2 +1)
-            if i!=0 and i!=n-2:
+            W_ij[l(i,j,n,m),l(i,j,n,m)]=2*((h/k)**2 +1) # first term of finite-difference equation
+            if i!=0 and i!=n-2: # not boundary conditions
                 W_ij[l(i,j,n,m),l(i+1,j,n,m)]=-1
                 W_ij[l(i,j,n,m),l(i-1,j,n,m)]=-1
             else:
-                if i==0:
+                if i==0: # boundary condition
                     W_ij[l(i,j,n,m),l(i+1,j,n,m)]=-1
                     w[l(i,j,n,m)]+=g(x[i],y[j+1],a,b,c,d)
-                if i==n-2:
+                if i==n-2: # boundary condition
                     W_ij[l(i,j,n,m),l(i-1,j,n,m)]=-1
                     w[l(i,j,n,m)]+=g(x[i+2],y[j+1],a,b,c,d)
             
-            if j!=0 and j!=m-2:
+            if j!=0 and j!=m-2: #not boundary condition
                 W_ij[l(i,j,n,m),l(i,j+1,n,m)]=-1
                 W_ij[l(i,j,n,m),l(i,j-1,n,m)]=-1
             else:
-                if j==0:
+                if j==0: # boundary condition
                     W_ij[l(i,j,n,m),l(i,j+1,n,m)]=-(h/k)**2
                     w[(l(i,j,n,m))]+=g(x[i+1],y[j],a,b,c,d)
-                if j==m-2:
+                if j==m-2: # boundary condition
                     W_ij[l(i,j,n,m),l(i,j-1,n,m)]=-(h/k)**2
                     w[l(i,j,n,m)]+=g(x[i+1],y[j+2],a,b,c,d)
-            w[l(i,j,n,m)]+=-h**2*f(x[i],y[j])
+            w[l(i,j,n,m)]+=-h**2*f(x[i],y[j]) # rhs, Poisson equation term
     
-    return W_ij, w
+    return W_ij, w # Returns coefficient matrix W_ij and constant vector w to form a linear systems that feeds the Crout-algorithm
 
 A,w=finite_difference_linear_system(0,0.5,0,0.5,4,4,f,g)
 # solves the system using numpy
