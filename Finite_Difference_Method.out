@@ -1,5 +1,7 @@
 \BOOKMARK [1][-]{section.1}{Ecuaciones diferenciales parciales el\355pticas}{}% 1
 \BOOKMARK [2][-]{subsection.1.1}{Seleccionando un ret\355culo}{section.1}% 2
-\BOOKMARK [1][-]{section.2}{M\351todo de Diferencias Finitas para ecuaci\363n de Poisson}{}% 3
-\BOOKMARK [2][-]{subsection.2.1}{Algoritmo de Generalizaci\363n Factorizaci\363n de Crout para matrices tridiagonales por bloques}{section.2}% 4
-\BOOKMARK [2][-]{subsection.2.2}{M\351todo iterativo SOR para resolver sistemas lineales}{section.2}% 5
+\BOOKMARK [2][-]{subsection.1.2}{M\351todo de Diferencias Finitas}{section.1}% 3
+\BOOKMARK [1][-]{section.2}{M\351todo de Diferencias Finitas para ecuaci\363n de Poisson}{}% 4
+\BOOKMARK [2][-]{subsection.2.1}{Algoritmo diferencias finitas\(sistema lineal\)}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.2}{Algoritmo de Generalizaci\363n Factorizaci\363n de Crout para matrices tridiagonales por bloques}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.3}{M\351todo iterativo SOR para resolver sistemas lineales}{section.2}% 7

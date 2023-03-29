@@ -89,16 +89,85 @@ u(x_0,y_j)=g(x_0,y_j)\,\, \text{ y } \,\, u(x_n,y_j)=g(x_n,y_j),\,\,\, \text{par
 \begin{equation*}
 u(x_i,y_0)=g(x_i,y_0)\,\, \text{ y } \,\, u(x_i,y_m)=g(x_i,y_m),\,\,\, \text{para cada }i=1,2,\hdots,n-1;
 \end{equation*}
+\subsection{Método de Diferencias Finitas}
+En forma de ecuación de diferencias el Método de diferencias finitas es
+\begin{equation}
+2\Big[\big(\frac{h}{k}\big)^2 +1  \Big]w_{ij}-(w_{i+1,j}+w_{i-1,j})-\big(\frac{h}{k}\big)^2(w_{i,j+1}+w_{i,j-1})=-h^2 f(x_i,y_j)
+\end{equation}
+para cada $i=1,2,\hdots,n-1$ y $j=1,2,\hdots,m-1$, donde
+\begin{equation}
+\begin{aligned}
+&w_{0j}=g(x_0,y_j)\,\,\text{y }\, w_{nj}=g(x_n,y_j),\,\,\, \text{para cada } j=0,1,\hdots,m;\\
+&w_{i0}=g(x_i,y_0)\,\,\text{y }\, w_{im}=g(x_i,y_m),\,\,\, \text{para cada } i=1,2,\hdots,n-1
+\end{aligned}
+\end{equation}
  
 
 
 
 \section{Método de Diferencias Finitas para ecuación de Poisson}
+
+\subsection{Algoritmo diferencias finitas(sistema lineal)}
+\begin{algorithm}[H]
+\caption{Función L para re-etiquetar las variables del sistema lineal}
+\begin{algorithmic}[H]
+\Function L {$i, j, n, m$}
+\State \Return $(i+1) + (m-1-(j+1)) \times (n-1) - 1$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Finite Difference Linear System}
+\begin{algorithmic}[H]
+%\Function{finite\_difference\_linear\_system}{$a,b,c,d,n,m,f,g$}
+\State $h \gets (b-a)/n$
+\State $k \gets (d-c)/n$
+\State $x \gets \text{numpy.linspace}(a, b, n+1)$
+\State $y \gets \text{numpy.linspace}(c, d, m+1)$
+\State $W_{ij} \gets$ zeros $(((n-1)\times(m-1)),((n-1)\times(m-1)))$
+\State $w \gets$ zeros $((n-1)\times(m-1))$
+\For{$i \gets 0$ to $n-2$}
+\For{$j \gets 0$ to $m-2$}
+\State $W_{ij}[l(i,j,n,m), l(i,j,n,m)] \gets 2((h/k)^2 + 1)$
+\If{$i \neq 0$ and $i \neq n-2$}
+\State $W_{ij}[L(i,j,n,m), L(i+1,j,n,m)] \gets -1$
+\State $W_{ij}[L(i,j,n,m), L(i-1,j,n,m)] \gets -1$
+\Else
+\If{$i = 0$}
+\State $W_{ij}[L(i,j,n,m), L(i+1,j,n,m)] \gets -1$
+\State $w[l(i,j,n,m)] \gets g(x[i], y[j+1], a, b, c, d)$
+\EndIf
+\If{$i = n-2$}
+\State $W_{ij}[L(i,j,n,m), L(i-1,j,n,m)] \gets -1$
+\State $w[L(i,j,n,m)] \gets g(x[i+2], y[j+1], a, b, c, d)$
+\EndIf
+\EndIf
+\If{$j \neq 0$ and $j \neq m-2$}
+\State $W_{ij}[L(i,j,n,m), L(i,j+1,n,m)] \gets -1$
+\State $W_{ij}[L(i,j,n,m), L(i,j-1,n,m)] \gets -1$
+\Else
+\If{$j = 0$}
+\State $W_{ij}[L(i,j,n,m), L(i,j+1,n,m)] \gets -(h/k)^2$
+\State $w[L(i,j,n,m)] \gets g(x[i+1], y[j], a, b, c, d)$
+\EndIf
+\If{$j = m-2$}
+\State $W_{ij}[L(i,j,n,m), L(i,j-1,n,m)] \gets -(h/k)^2$
+\State $w[L(i,j,n,m)] \gets g(x[i+1], y[j+2], a, b, c, d)$
+\EndIf
+\EndIf
+\State $w[L(i,j,n,m)] \gets -h^2f(x[i], y[j])$
+\EndFor
+\EndFor
+\State \textbf{return} $W_{ij}, w$
+\end{algorithmic}
+\end{algorithm}
+
 \subsection{Algoritmo de Generalización Factorización de Crout para matrices tridiagonales por bloques}
 
 \begin{algorithm}[H]
 \caption{Crout Generalization Algorithm for Tridiagonal Block Matrices}
-\begin{algorithmic}[1]
+\begin{algorithmic}[H]
 \Require $A \in \mathbb{R}^{N \times N}$, $K \in \mathbb{R}^{N}$, $n \in \mathbb{N}$
 \Ensure $sol \in \mathbb{R}^{N}$
 \State $N \gets \lfloor \frac{\operatorname{shape}(A)[1]}{n} \rfloor$
@@ -137,24 +206,25 @@ u(x_i,y_0)=g(x_i,y_0)\,\, \text{ y } \,\, u(x_i,y_m)=g(x_i,y_m),\,\,\, \text{par
 \caption{Iterative SOR method for solving linear systems}
 \begin{algorithmic}[H]
 \Require{$A$ es una $n \times n$ matriz, $b$ es un vector de incógnitas de dimensión $n$, $x^{(0)}$ es una solución propuesta inicial, $\omega$ es el parámetro de relajamiento, $\epsilon$ es la tolerancia, and $max_{iter}$ es el número máximo de iteraciones.}
-\Ensure{$x^{(k+1)}$ es una solución aproximada de $Ax = b$.}
-
-\State $k \gets 0$
-\State $x^{(k)} \gets x^{(0)}$
-\While{$k < max_{iter}$ and $||x^{(k+1)} - x^{(k)}||2 \geq \epsilon$}
-\State $k \gets k+1$
+\Ensure{$x$ es una solución aproximada de $Ax = b$.}
+\State $k \gets 1$
+\State $xo \gets x^{(0)}$
+\State $tolerance\gets \textbf{True}$
+\While{$k < max_{iter}$ and $\text{tolerance}$}
 \For{$i = 1$ to $n$}
-\State $s \gets \sum{j=1}^{i-1} a_{ij}x_j^{(k+1)} + \sum_{j=i+1}^{n} a_{ij}x_j^{(k)}$
-\State $x_i^{(k+1)} \gets (1-\omega) x_i^{(k)} + \frac{\omega}{a_{ii}} (b_i - s)$
+\State $s \gets \sum_{j=1}^{i-1} a_{ij}x_j + \sum_{j=i+1}^{n} a_{ij}xo_j$
+\State $x_i \gets (1-\omega) xo_i + \frac{\omega}{a_{ii}} (b_i - s)$
 \EndFor
+\If{$||x - xo|| < \epsilon$}
+\State $tolerance\gets \textbf{False}$
+\EndIf
+\State $k \gets k+1$
+\State $xo=x$
 \EndWhile
-
 \If{$k = max_{iter}$}
 \State \textbf{print} "Se ha alcanzado el número máximo de iteraciones"
 \EndIf
-
-\State \textbf{return} $x^{(k+1)}$
-
+\State \textbf{return} $x$
 \end{algorithmic}
 \end{algorithm}
 %En este trabajo de graduación consta de dos partes, en la primera parte se ha realizado una investigación sobre el enfoque de la mecánica estadística en la redes neuronales. En la segunda parte

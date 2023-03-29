@@ -13,7 +13,7 @@ Specifically this solves the Poisson Equation by setting f<>0
 
 import numpy as np
 from crout_factorization_generalization import Crout_generalization
-from scipy.linalg import lu
+#from scipy.linalg import lu
 
 def f(x,y):
     return 0
@@ -66,8 +66,6 @@ def finite_difference_linear_system(a,b,c,d, # definition of the 2D region to fi
                     w[(l(i,j,n,m))]+=g(x[i+1],y[j],a,b,c,d)
                 if j==m-2:
                     W_ij[l(i,j,n,m),l(i,j-1,n,m)]=-(h/k)**2
-                    #print(g(x[i+1],y[j+2],a,b,c,d))
-                    #print(y[j+1])
                     w[l(i,j,n,m)]+=g(x[i+1],y[j+2],a,b,c,d)
             w[l(i,j,n,m)]+=-h**2*f(x[i],y[j])
     
