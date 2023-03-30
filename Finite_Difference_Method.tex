@@ -26,7 +26,7 @@
 
 \Large
  \begin{center}
-Método de Diferencias Finitas\\
+Método de Diferencias Finitas para ecuaciones elípticas\\
 
 
 \hspace{10pt}
@@ -114,16 +114,18 @@ donde $l=i+(m-1-j)(n-1)$ para cada $i=1,2,\hdots,n-1$ y $j=1,2,\hdots,m-1$, con 
 
 
 
-\section{Método de Diferencias Finitas para ecuación de Poisson}
+\section{Algoritmo Método de Diferencias Finitas para ecuación de Poisson}
 Para hallar un algoritmo que genere y resuelva el método de diferencias finitas para las ecuaciones parciales elípticas descrito en la sección anterior se usa el esquema de re-etiquetado expuesto anteriormente, con esto se asegura que se obtiene un sistema tri-diagonal por bloques. Para estos sistemas tri-diagonales por bloques es conveniente aplicar una generalización del algoritmo de Factorización de Crout \cite{Varga} para matrices tri-diagonales por bloques.\\
 Otro algoritmo iterativo que se puede utilizar es el método de relajamiento SOR. Con esto se puede delinear una estrategia para construir un algoritmo para el método de diferencias finitas:
 \begin{itemize}
 \item Construir el sistema asociado a las aproximaciones $w_{ij}$ para $u(x_i,y_j)$, utilizando el esquema de etiquetado expuesto anteriormente.
-\item Aplicar un método de resolucion de sistemas lineales: Generalización de factorización de Crout, método iterativo SOR.
+\item Aplicar un método de resolución de sistemas lineales: Generalización de factorización de Crout, método iterativo SOR.
 \item Resolver para $w_{ij}$
 \end{itemize}
 
 \subsection{Algoritmo diferencias finitas(sistema lineal)}
+\subsubsection{Función de re-etiquetado l}
+Se implementa la función $l$ para re-etiquetar el sistema de ecuaciones lineal
 \begin{algorithm}[H]
 \caption{Función L para re-etiquetar las variables del sistema lineal}\label{alg::funcL}
 \begin{algorithmic}[H]
@@ -132,7 +134,8 @@ Otro algoritmo iterativo que se puede utilizar es el método de relajamiento SOR
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
-
+\subsubsection{Sistema lineal asociado}
+Con está función se crea el sistema asociado al método de diferencias finitas
 \begin{algorithm}[H]
 \caption{Finite Difference Linear System}\label{alg::finite_difference}
 \begin{algorithmic}[H]
@@ -181,9 +184,9 @@ Otro algoritmo iterativo que se puede utilizar es el método de relajamiento SOR
 \end{algorithm}
 
 \subsection{Algoritmo de Generalización Factorización de Crout para matrices tridiagonales por bloques}
-
+Esta es la implementación de la generalización del algoritmo de factorización de Crout para matrices tri-diagonales por bloques, el algoritmo de factorización de Crout sólo es valido para matrices tri-diagonales y no para matrices tri-diagonales por bloques.
 \begin{algorithm}[H]
-\caption{Crout Generalization Algorithm for Tridiagonal Block Matrices}
+\caption{Crout Generalization Algorithm for Tridiagonal Block Matrices}\label{alg::Crout}
 \begin{algorithmic}[H]
 \Require $A \in \mathbb{R}^{N \times N}$, $K \in \mathbb{R}^{N}$, $n \in \mathbb{N}$
 \Ensure $sol \in \mathbb{R}^{N}$
@@ -222,10 +225,11 @@ Otro algoritmo iterativo que se puede utilizar es el método de relajamiento SOR
 \subsection{Método iterativo SOR para resolver sistemas lineales}
 \begin{algorithm}[H]
 %\caption{Método iterativo SOR para resolver sistemas lineales}
-\caption{Iterative SOR method for solving linear systems}
+\caption{Iterative SOR method for solving linear systems}\label{alg::SOR}
 \begin{algorithmic}[H]
 \Require{$A$ es una $n \times n$ matriz, $b$ es un vector de incógnitas de dimensión $n$, $x^{(0)}$ es una solución propuesta inicial, $\omega$ es el parámetro de relajamiento, $\epsilon$ es la tolerancia, and $max_{iter}$ es el número máximo de iteraciones.}
 \Ensure{$x$ es una solución aproximada de $Ax = b$.}
+\Function{SOR}{$A,b,\omega,\epsilon,\max_{iter},x^{(0)}$}
 \State $k \gets 1$
 \State $xo \gets x^{(0)}$
 \State $tolerance\gets \textbf{True}$
@@ -244,6 +248,39 @@ Otro algoritmo iterativo que se puede utilizar es el método de relajamiento SOR
 \State \textbf{print} "Se ha alcanzado el número máximo de iteraciones"
 \EndIf
 \State \textbf{return} $x$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Diferencia finitas usando generalización de factorización Crout}
+\begin{algorithm}
+\caption{Algoritmo diferencias finitas usando generalización factorización de Crout}\label{alg::finite_diff_Crout}
+Dado un problema con condiciones de frontera de la forma \ref{eq::Poisson}, definir
+\begin{equation*}
+a,b,c,d,n,m,f(x,y),g(x,y)
+\end{equation*}
+usando las funciones definidas en los algoritmos \ref{alg::finite_difference}, \ref{alg::Crout}
+\begin{algorithmic}
+%\State usar función definida en algoritmo 
+\State $A, b\gets$ finite\_difference\_linear\_system$(a,b,c,d,n,m,f,g)$
+%\State usar función definida en algoritmo 
+\State $solution\gets $ Crout\_generalization(A,b,n-1)
+\end{algorithmic}
+\end{algorithm}
+este algoritmo se ha implementado en Python, usando la librería Numpy. El repositorio se encuentra en \url{https://github.com/Julio-Medina/Finite_Difference_Method/tree/main/code}.
+\subsection{Diferencia finitas usando método de relajamiento SOR}
+\begin{algorithm}
+\caption{Algoritmo diferencias finitas usando generalización factorización de Crout}\label{alg::finite_diff_Crout}
+Dado un problema con condiciones de frontera de la forma \ref{eq::Poisson}, definir
+\begin{equation*}
+a,b,c,d,n,m,f(x,y),g(x,y),\omega,\epsilon,x^{(0)}
+\end{equation*}
+usando las funciones definidas en los algoritmos \ref{alg::finite_difference}, \ref{alg::SOR}
+\begin{algorithmic}
+%\State usar función definida en algoritmo 
+\State $A, b\gets$ finite\_difference\_linear\_system$(a,b,c,d,n,m,f,g)$
+%\State usar función definida en algoritmo 
+\State $solution\gets $ SOR($A,b,\omega,\epsilon,\max_{iter},x^{(0)}$)
 \end{algorithmic}
 \end{algorithm}
 %En este trabajo de graduación consta de dos partes, en la primera parte se ha realizado una investigación sobre el enfoque de la mecánica estadística en la redes neuronales. En la segunda parte
