@@ -19,7 +19,7 @@
 \usepackage{algpseudocode}
 %\usepackage{algorithm2e}
 
-
+\setcounter{MaxMatrixCols}{20}
 
 \begin{document}
 \pagenumbering{arabic}
@@ -110,7 +110,11 @@ El sistema lineal para las incógnitas $w_{ij}$ se puede representar más eficie
 \begin{equation}
 P_l=(x_i,y_j), \,\,\, \text{y}\,\,\, w_l=w_{ij}
 \end{equation}
-donde $l=i+(m-1-j)(n-1)$ para cada $i=1,2,\hdots,n-1$ y $j=1,2,\hdots,m-1$, con este esquema de etiquetan a los puntos interiores del retículo de izquierda a derecha y de arriba hacia abajo y con esto se asegura que el sistema lineal resultante para hallar $w_{ij}$ es una matriz con bandas de ancho máximo $2n-1$. Esta técnica fue utiliza para implementar este algoritmo en Python, ver algoritmos \ref{alg::funcL} y \ref{alg::finite_difference}.
+donde
+\begin{equation}\label{eq::relabeling_function}
+l(i,j)=i+(m-1-j)(n-1)
+\end{equation} 
+para cada $i=1,2,\hdots,n-1$ y $j=1,2,\hdots,m-1$, con este esquema de etiquetan a los puntos interiores del retículo de izquierda a derecha y de arriba hacia abajo y con esto se asegura que el sistema lineal resultante para hallar $w_{ij}$ es una matriz con bandas de ancho máximo $2n-1$. Esta técnica fue utiliza para implementar este algoritmo en Python, ver algoritmos \ref{alg::funcL} y \ref{alg::finite_difference}.
 
 
 
@@ -283,6 +287,201 @@ usando las funciones definidas en los algoritmos \ref{alg::finite_difference}, \
 \State $solution\gets $ SOR($A,b,\omega,\epsilon,\max_{iter},x^{(0)}$)
 \end{algorithmic}
 \end{algorithm}
+\subsection{Ejemplos}
+Para ilustrar el funcionamiento del algoritmo no hay mejor forma que resolver algunos problemas con condiciones en la frontera.
+\subsubsection{Ejemplo 1}
+Resolver el siguiente problema 
+\begin{equation}
+\frac{\partial^2 u}{\partial x^2}(x,y)+\frac{\partial^2 u}{\partial y^2}(x,y)=0
+\end{equation}
+para cada $(x,y)$ en el conjunto $R=\{ (x,y)|\, 0<x<0.5,\, 0<y<0.5 \}$. Las condiciones de contorno  son 
+\begin{equation*}
+u(0,y)=0,\,u(x,0)=0,\, u(x,0.5)=200x,\, u(0.5,y)=200y,\,
+\end{equation*}
+Si $n=m=4$, la ecuación de diferencias finitas \ref{eq::finite_difference} da como resultado
+\begin{equation}
+4w_{i,j}-w_{i+1,j}-w_{i-1,j}-w_{i,j-1}-w_{i,j+1}=0
+\end{equation}
+para cada $i=1,2,3$ y $j=1,2,3$.\\
+Por ejemplo cuando $i=1,j=1$ se obtiene
+\begin{equation}\label{eq::finite_diff1}
+4w_{1,1}-w_{2,1}-w_{0,1}-w_{1,0}-w_{1,2}=0
+\end{equation}
+pero $w_{1,0}=w_{0,1}=0$, usando la función de re-etiquetado \ref{eq::relabeling_function}  se obtiene
+\begin{equation*}
+l(1,1)=7,\,l(2,1)=8,\,l(1,2)=4
+\end{equation*}
+sustituyendo en \ref{eq::finite_diff1} y usando las condiciones de contorno se obtiene la ecuación
+\begin{equation*}
+4w_{7}-w_{8}-w_{4}=0
+\end{equation*}
+este proceso se repite para los indices restantes, dando como resultado $9$ ecuaciones lineales para las variables $w_1,w_2,w_3,w_4,w_5,w_7,w_8,w_9$. La matriz de coeficientes del sistema lineal obtenido al iterar a través de todos los indices es 
+\begin{equation}\label{eq::block_tridiagonal_matrix_1}
+A =
+\begin{bmatrix}
+4.0 & -1.0 & 0.0 & -1.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
+-1.0 & 4.0 & -1.0 & 0.0 & -1.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
+0.0 & -1.0 & 4.0 & 0.0 & 0.0 & -1.0 & 0.0 & 0.0 & 0.0 \\
+-1.0 & 0.0 & 0.0 & 4.0 & -1.0 & 0.0 & -1.0 & 0.0 & 0.0 \\
+0.0 & -1.0 & 0.0 & -1.0 & 4.0 & -1.0 & 0.0 & -1.0 & 0.0 \\
+0.0 & 0.0 & -1.0 & 0.0 & -1.0 & 4.0 & 0.0 & 0.0 & -1.0 \\
+0.0 & 0.0 & 0.0 & -1.0 & 0.0 & 0.0 & 4.0 & -1.0 & 0.0 \\
+0.0 & 0.0 & 0.0 & 0.0 & -1.0 & 0.0 & -1.0 & 4.0 & -1.0 \\
+0.0 & 0.0 & 0.0 & 0.0 & 0.0 & -1.0 & 0.0 & -1.0 & 4.0 \\
+\end{bmatrix}
+\end{equation}
+y el vector constante es 
+\begin{equation*}
+b =
+\begin{bmatrix}
+25.0 \\
+50.0 \\
+150.0 \\
+0.0 \\
+0.0 \\
+50.0 \\
+0.0 \\
+0.0 \\
+25.0 \\
+\end{bmatrix}
+\end{equation*}
+Es importante notar que la matriz resultante \ref{eq::block_tridiagonal_matrix_1} es una matriz tri-diagonal por bloques con cada bloque de dimensión $3\times 3$. Con esto se puede resolver el sistema
+\begin{equation}
+Aw=b
+\end{equation}
+donde se obtiene
+\begin{equation}
+\begin{bmatrix}
+w_1 \\
+w_2 \\
+w_3 \\
+w_4 \\
+w_5 \\
+w_6 \\
+w_7 \\
+w_8 \\
+w_9 \\
+\end{bmatrix}=
+\begin{bmatrix}
+18.75 \\
+37.5 \\
+56.25 \\
+12.5 \\
+25 \\
+37.5 \\
+6.25 \\
+12.5 \\
+18.75 \\
+\end{bmatrix}
+\end{equation}
+
+\subsubsection{Ejemplo 2}
+Resolver el siguiente problema 
+\begin{equation}
+\frac{\partial^2 u}{\partial x^2}(x,y)+\frac{\partial^2 u}{\partial y^2}(x,y)=x-y
+\end{equation}
+para cada $(x,y)$ en el conjunto $R=\{ (x,y)|\, 0<x<12,\, 0<y<12 \}$. Las condiciones de contorno  son 
+\begin{equation*}
+u(0,y)=0,\,u(x,0)=0,\, u(x,2)=10x^2,\, u(2,y)=200y
+\end{equation*}
+Si $n=6,\,\,m=4$, la ecuación de diferencias finitas \ref{eq::finite_difference} da como resultado
+\begin{equation}
+4w_{i,j}-w_{i+1,j}-w_{i-1,j}-w_{i,j-1}-w_{i,j+1}=-4(x_i-y_i)
+\end{equation}
+La matriz de coeficientes asociada $A$ es 
+\begin{equation}
+\begin{bmatrix}
+ 4.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 \\
+-1.0 &  4.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 \\
+ 0.0 & -1.0 &  4.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 \\
+ 0.0 &  0.0 & -1.0 &  4.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 \\
+ 0.0 &  0.0 &  0.0 & -1.0 &  4.0 &  0.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 \\
+-1.0 &  0.0 &  0.0 &  0.0 &  0.0 &  4.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 &  0.0 \\
+ 0.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  4.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 \\
+ 0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  4.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 \\
+ 0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  4.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 \\
+ 0.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  4.0 &  0.0 &  0.0 &  0.0 &  0.0 & -1.0 \\
+ 0.0 &  0.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 &  0.0 &  4.0 & -1.0 &  0.0 &  0.0 &  0.0 \\
+ 0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  4.0 & -1.0 &  0.0 &  0.0 \\
+ 0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  4.0 & -1.0 &  0.0 \\
+ 0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  4.0 & -1.0 \\
+ 0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 &  0.0 & -1.0 &  0.0 &  0.0 &  0.0 & -1.0 &  4.0 \\
+\end{bmatrix}
+\end{equation}
+y el vector constante es 
+\begin{equation*}
+b =
+\begin{bmatrix}
+ 64.0 \\
+ 176.0 \\
+ 368.0 \\
+ 640.0 \\
+2792.0 \\
+  12.0 \\
+   4.0 \\
+  -4.0 \\
+ -12.0 \\
+1180.0 \\
+   0.0 \\
+  -8.0 \\
+ -16.0 \\
+ -24.0 \\
+ 568.0 \\
+\end{bmatrix}
+\end{equation*}
+Es importante notar que la matriz resultante \ref{eq::block_tridiagonal_matrix_1} es una matriz tri-diagonal por bloques con cada bloque de dimensión $5\times 5$. Con esto se puede resolver el sistema
+\begin{equation}
+Aw=b
+\end{equation}
+donde se obtiene
+\begin{equation}
+\begin{bmatrix}
+w_1 \\
+w_2 \\
+w_3 \\
+w_4 \\
+w_5 \\
+w_6 \\
+w_7 \\
+w_8 \\
+w_9 \\
+w_{10} \\
+w_{11} \\
+w_{12} \\
+w_{13} \\
+w_{14} \\
+w_{15} \\
+\end{bmatrix}=
+\begin{bmatrix}
+  85.391560 \\
+ 201.165141 \\
+ 376.447717 \\
+ 640.071973 \\
+1053.341871 \\
+  76.401101 \\
+ 166.821284 \\
+ 296.553756 \\
+ 490.498303 \\
+ 781.295511 \\
+  41.391560 \\
+  89.165141 \\
+ 156.447717 \\
+ 256.071973 \\
+ 401.341871 \\
+\end{bmatrix}
+\end{equation}
+\subsubsection{Ejemplo 3}
+Resolver el siguiente problema 
+\begin{equation}
+\frac{\partial^2 u}{\partial x^2}(x,y)+\frac{\partial^2 u}{\partial y^2}(x,y)=x e^{y}
+\end{equation}
+para cada $(x,y)$ en el conjunto $R=\{ (x,y)|\, 0<x<2,\, 0<y<1 \}$. Las condiciones de contorno  son 
+\begin{equation*}
+u(0,y)=0,\,u(x,0)=x,\, u(x,1)=ex,\, u(2,y)=2e^y
+\end{equation*}
+Con $n=6,\,\,m=5$, comparar las aproximaciones con la solución analítica $u(x,y)=x e^y$
+
+
 
 \begin{thebibliography}{99}
 %% La bibliografía se ordena en orden alfabético respecto al apellido del 

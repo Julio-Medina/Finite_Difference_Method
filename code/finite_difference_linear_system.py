@@ -12,22 +12,25 @@ Specifically this solves the Poisson Equation by setting f<>0
 """
 
 import numpy as np
+import math
 # imports Crout Generalization algorithm implementation
 from crout_factorization_generalization import Crout_generalization 
 #from scipy.linalg import lu
 
 def f(x,y):
-    return x-y
+    return x*math.exp(y)
+    #return x-y
+    #return 0
 
 def g(x,y,a,b,c,d):
     if x==a:
-        return x**2
+        return 0
     if x==b:
-        return 200*y
+        return 2*math.exp(y)
     if y==c:
-        return 2*y+x
+        return x#0#2*y+x
     if y==d:
-        return 200*x
+        return math.exp(1)*x#10*x**2#200*x
     
 def l(i,j,n,m): # relabeling function
     return (i+1)+(m-1-(j+1))*(n-1)-1
@@ -59,21 +62,22 @@ def finite_difference_linear_system(a,b,c,d, # definition of the 2D region to fi
                     w[l(i,j,n,m)]+=g(x[i+2],y[j+1],a,b,c,d)
             
             if j!=0 and j!=m-2: #not boundary condition
-                W_ij[l(i,j,n,m),l(i,j+1,n,m)]=-1
-                W_ij[l(i,j,n,m),l(i,j-1,n,m)]=-1
+                W_ij[l(i,j,n,m),l(i,j+1,n,m)]=-(h/k)**2
+                W_ij[l(i,j,n,m),l(i,j-1,n,m)]=-(h/k)**2
             else:
                 if j==0: # boundary condition
                     W_ij[l(i,j,n,m),l(i,j+1,n,m)]=-(h/k)**2
-                    w[(l(i,j,n,m))]+=g(x[i+1],y[j],a,b,c,d)
+                    w[(l(i,j,n,m))]+=((h/k)**2)*g(x[i+1],y[j],a,b,c,d)
                 if j==m-2: # boundary condition
                     W_ij[l(i,j,n,m),l(i,j-1,n,m)]=-(h/k)**2
-                    w[l(i,j,n,m)]+=g(x[i+1],y[j+2],a,b,c,d)
-            w[l(i,j,n,m)]+=-h**2*f(x[i],y[j]) # rhs, Poisson equation term
+                    w[l(i,j,n,m)]+=((h/k)**2)*g(x[i+1],y[j+2],a,b,c,d)
+            w[l(i,j,n,m)]+=-(h**2)*f(x[i],y[j]) # rhs, Poisson equation term
     
-    return W_ij, w # Returns coefficient matrix W_ij and constant vector w to form a linear systems that feeds the Crout-algorithm
-a=0; b=20; c=0; d=100; n=10; m=6
-
-A,w=finite_difference_linear_system(a,b,c,d,n,m,f,g)
+    return W_ij, w ,x,y# Returns coefficient matrix W_ij and constant vector w to form a linear systems that feeds the Crout-algorithm
+#a=0; b=0.5; c=0; d=0.5; n=4; m=4
+#a=0; b=12; c=0; d=12; n=6; m=4
+a=0; b=2; c=0; d=1; n=6; m=5
+A,w,x,y=finite_difference_linear_system(a,b,c,d,n,m,f,g)
 # solves the system using numpy
 sol=np.linalg.solve(A,w)
 # solves the system using Crout Factorization for block tridiagonal matrices

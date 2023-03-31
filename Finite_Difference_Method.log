@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2021.5.18)  29 MAR 2023 22:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2021.5.18)  30 MAR 2023 23:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -435,7 +435,7 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 52.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<./lattice.png, id=50, 699.61375pt x 509.905pt>
+<./lattice.png, id=66, 699.61375pt x 509.905pt>
 File: ./lattice.png Graphic file (type png)
 <use ./lattice.png>
 Package pdftex.def Info: ./lattice.png  used on input line 61.
@@ -466,40 +466,45 @@ Underfull \hbox (badness 10000) in paragraph at lines 106--108
 
 [2]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 130.
+put line 134.
  [3]
 LaTeX Font Info:    Trying to load font information for U+bbold on input line 1
-91.
+95.
  (/usr/share/texlive/texmf-dist/tex/latex/bbold/Ubbold.fd) [4] [5]
-Overfull \hbox (3.50417pt too wide) in paragraph at lines 271--271
+Overfull \hbox (3.50417pt too wide) in paragraph at lines 275--275
 []\OT1/cmr/bx/n/12 Diferencia fi-ni-tas usan-do m^^Seto-do de re-la-ja-mien-to 
 SOR 
  []
 
-[6]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 307.
- [7]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 307.
+[6] [7]
+Overfull \hbox (118.33427pt too wide) detected at line 410
+[] []
+ []
+
+[8] [9]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 506.
+ [10]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 506.
  (./Finite_Difference_Method.aux
 LaTeX Info: Redefining \. on input line 25.
 LaTeX Info: Redefining \% on input line 25.
 )
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 307.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 307.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 506.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 506.
 Package rerunfilecheck Info: File `Finite_Difference_Method.out' has not change
 d.
-(rerunfilecheck)             Checksum: AA42604878D96C6E6D52221A2D306CB1;1084.
+(rerunfilecheck)             Checksum: CBC9877EE14018B90C6EA66C9BAC1092;1349.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 307.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 506.
  ) 
 Here is how much of TeX's memory you used:
- 8252 strings out of 481239
- 120513 string characters out of 5920377
- 414217 words of memory out of 5000000
- 23320 multiletter control sequences out of 15000+600000
+ 8279 strings out of 481239
+ 120925 string characters out of 5920377
+ 423347 words of memory out of 5000000
+ 23327 multiletter control sequences out of 15000+600000
  538184 words of font info for 47 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  34i,9n,35p,586b,381s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -520,10 +525,10 @@ xmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dis
 t/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/font
 s/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texmf/fonts/type1/public/cm-s
 uper/sfrm1000.pfb>
-Output written on Finite_Difference_Method.pdf (7 pages, 211395 bytes).
+Output written on Finite_Difference_Method.pdf (10 pages, 222318 bytes).
 PDF statistics:
- 202 PDF objects out of 1000 (max. 8388607)
- 173 compressed objects within 2 object streams
- 37 named destinations out of 1000 (max. 500000)
- 94 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 253 PDF objects out of 1000 (max. 8388607)
+ 220 compressed objects within 3 object streams
+ 57 named destinations out of 1000 (max. 500000)
+ 126 words of extra memory for PDF output out of 10000 (max. 10000000)
 
