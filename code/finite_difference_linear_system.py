@@ -42,7 +42,7 @@ def finite_difference_linear_system(a,b,c,d, # definition of the 2D region to fi
                                     f,g):    # functions f and g , f is the rhs of Poisson eq. and g is the boundary contidion fucntion
 
     h=(b-a)/n
-    k=(d-c)/n
+    k=(d-c)/m
     x=np.linspace(a,b,n+1)
     y=np.linspace(c,d,m+1)
     W_ij=np.zeros(((n-1)*(m-1),(n-1)*(m-1)))
@@ -57,9 +57,11 @@ def finite_difference_linear_system(a,b,c,d, # definition of the 2D region to fi
                 if i==0: # boundary condition
                     W_ij[l(i,j,n,m),l(i+1,j,n,m)]=-1
                     w[l(i,j,n,m)]+=g(x[i],y[j+1],a,b,c,d)
+                    
                 if i==n-2: # boundary condition
                     W_ij[l(i,j,n,m),l(i-1,j,n,m)]=-1
                     w[l(i,j,n,m)]+=g(x[i+2],y[j+1],a,b,c,d)
+                    
             
             if j!=0 and j!=m-2: #not boundary condition
                 W_ij[l(i,j,n,m),l(i,j+1,n,m)]=-(h/k)**2
@@ -68,15 +70,16 @@ def finite_difference_linear_system(a,b,c,d, # definition of the 2D region to fi
                 if j==0: # boundary condition
                     W_ij[l(i,j,n,m),l(i,j+1,n,m)]=-(h/k)**2
                     w[(l(i,j,n,m))]+=((h/k)**2)*g(x[i+1],y[j],a,b,c,d)
+                    
                 if j==m-2: # boundary condition
                     W_ij[l(i,j,n,m),l(i,j-1,n,m)]=-(h/k)**2
                     w[l(i,j,n,m)]+=((h/k)**2)*g(x[i+1],y[j+2],a,b,c,d)
-            w[l(i,j,n,m)]+=-(h**2)*f(x[i],y[j]) # rhs, Poisson equation term
+            w[l(i,j,n,m)]+=-(h**2)*f(x[i+1],y[j+1]) # rhs, Poisson equation term
     
     return W_ij, w ,x,y# Returns coefficient matrix W_ij and constant vector w to form a linear systems that feeds the Crout-algorithm
 #a=0; b=0.5; c=0; d=0.5; n=4; m=4
 #a=0; b=12; c=0; d=12; n=6; m=4
-a=0; b=2; c=0; d=1; n=6; m=5
+a=0.0; b=2.0; c=0.0; d=1.0; n=6; m=5
 A,w,x,y=finite_difference_linear_system(a,b,c,d,n,m,f,g)
 # solves the system using numpy
 sol=np.linalg.solve(A,w)
