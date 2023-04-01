@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2021.5.18)  31 MAR 2023 18:29
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2021.5.18)  31 MAR 2023 22:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -496,21 +496,16 @@ Overfull \hbox (3.50417pt too wide) in paragraph at lines 278--278
 SOR 
  []
 
-[6] [7]
-Overfull \hbox (118.33427pt too wide) detected at line 413
-[] []
- []
-
-[8] [9] [10]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 537.
- [11]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 537.
+[6] [7] [8] [9]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 493.
+ [10]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 493.
  (./Finite_Difference_Method.aux
 LaTeX Info: Redefining \. on input line 25.
 LaTeX Info: Redefining \% on input line 25.
 )
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 537.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 537.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 493.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 493.
 Package rerunfilecheck Info: File `Finite_Difference_Method.out' has not change
 d.
 (rerunfilecheck)             Checksum: CBC9877EE14018B90C6EA66C9BAC1092;1349.
@@ -518,13 +513,13 @@ d.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 537.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 493.
  ) 
 Here is how much of TeX's memory you used:
  8338 strings out of 481239
- 121702 string characters out of 5920377
- 424124 words of memory out of 5000000
- 23381 multiletter control sequences out of 15000+600000
+ 121727 string characters out of 5920377
+ 415161 words of memory out of 5000000
+ 23382 multiletter control sequences out of 15000+600000
  538184 words of font info for 47 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  34i,9n,35p,576b,381s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -545,10 +540,10 @@ xmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dis
 t/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/font
 s/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texmf/fonts/type1/public/cm-s
 uper/sfrm1000.pfb>
-Output written on Finite_Difference_Method.pdf (11 pages, 224387 bytes).
+Output written on Finite_Difference_Method.pdf (10 pages, 223422 bytes).
 PDF statistics:
- 257 PDF objects out of 1000 (max. 8388607)
- 223 compressed objects within 3 object streams
- 58 named destinations out of 1000 (max. 500000)
+ 253 PDF objects out of 1000 (max. 8388607)
+ 220 compressed objects within 3 object streams
+ 57 named destinations out of 1000 (max. 500000)
  126 words of extra memory for PDF output out of 10000 (max. 10000000)
 
