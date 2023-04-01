@@ -13,6 +13,8 @@ Specifically this solves the Poisson Equation by setting f<>0
 
 import numpy as np
 import math
+import pandas as pd
+
 # imports Crout Generalization algorithm implementation
 from crout_factorization_generalization import Crout_generalization 
 #from scipy.linalg import lu
@@ -34,6 +36,9 @@ def g(x,y,a,b,c,d):
     
 def l(i,j,n,m): # relabeling function
     return (i+1)+(m-1-(j+1))*(n-1)-1
+
+def u(x,y):
+    return x*math.exp(y)
 
 
 
@@ -79,9 +84,28 @@ def finite_difference_linear_system(a,b,c,d, # definition of the 2D region to fi
     return W_ij, w ,x,y# Returns coefficient matrix W_ij and constant vector w to form a linear systems that feeds the Crout-algorithm
 #a=0; b=0.5; c=0; d=0.5; n=4; m=4
 #a=0; b=12; c=0; d=12; n=6; m=4
+def error_table(n,m,x,y,w,u):
+    csv_list=[]
+    for i in range(n-1):
+        for j in range(m-1):
+            element=[i+1,j+1,x[i+1],y[j+1],w[l(i,j,n,m)],u(x[i+1],y[j+1]),abs(u(x[i+1],y[j+1])-w[l(i,j,n,m)])]
+            csv_list.append(element)
+    column_scheme=['i',
+                   'j',
+                  'x_i',
+                  'y_j',
+                 'w_ij',
+            'u(x_i,y_j)',
+        '|u(x_i,y_j)-w_ij|']
+    csv_file_df=pd.DataFrame(csv_list, columns=column_scheme)  
+    csv_file_df.to_csv('error_table.csv', index=False)
+    return csv_file_df
+        
+        
 a=0.0; b=2.0; c=0.0; d=1.0; n=6; m=5
 A,w,x,y=finite_difference_linear_system(a,b,c,d,n,m,f,g)
 # solves the system using numpy
 sol=np.linalg.solve(A,w)
 # solves the system using Crout Factorization for block tridiagonal matrices
 sol2=Crout_generalization(A,w,n-1) 
+error_analysis_table=error_table(n,m,x,y,sol2,u)

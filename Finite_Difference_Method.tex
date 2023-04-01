@@ -18,6 +18,7 @@
 %\usepackage{algorithmic}
 \usepackage{algpseudocode}
 %\usepackage{algorithm2e}
+\usepackage{booktabs}
 
 \setcounter{MaxMatrixCols}{20}
 
@@ -145,7 +146,7 @@ Con está función se crea el sistema asociado al método de diferencias finitas
 \begin{algorithmic}[H]
 \Function{finite\_difference\_linear\_system}{$a,b,c,d,n,m,f,g$}
 \State $h \gets (b-a)/n$
-\State $k \gets (d-c)/n$
+\State $k \gets (d-c)/m$
 \State $x \gets \text{numpy.linspace}(a, b, n+1)$
 \State $y \gets \text{numpy.linspace}(c, d, m+1)$
 \State $W_{ij} \gets$ zeros $(((n-1)\times(m-1)),((n-1)\times(m-1)))$
@@ -167,19 +168,21 @@ Con está función se crea el sistema asociado al método de diferencias finitas
 \EndIf
 \EndIf
 \If{$j \neq 0$ and $j \neq m-2$}
-\State $W_{ij}[L(i,j,n,m), L(i,j+1,n,m)] \gets -1$
-\State $W_{ij}[L(i,j,n,m), L(i,j-1,n,m)] \gets -1$
+\State $W_{ij}[L(i,j,n,m), L(i,j+1,n,m)] \gets-(h/k)^2$
+\State $W_{ij}[L(i,j,n,m), L(i,j-1,n,m)] \gets-(h/k)^2$
 \Else
 \If{$j = 0$}
 \State $W_{ij}[L(i,j,n,m), L(i,j+1,n,m)] \gets -(h/k)^2$
-\State $w[L(i,j,n,m)] \gets g(x[i+1], y[j], a, b, c, d)$
+\State $aux\gets (h/k)^2*g(x[i+1],y[j],a,b,c,d)$
+\State $w[L(i,j,n,m)] \gets w[L(i,j,n,m)]+ aux$
 \EndIf
 \If{$j = m-2$}
 \State $W_{ij}[L(i,j,n,m), L(i,j-1,n,m)] \gets -(h/k)^2$
-\State $w[L(i,j,n,m)] \gets g(x[i+1], y[j+2], a, b, c, d)$
+\State $aux\gets (h/k)^2*g(x[i+1],y[j+2],a,b,c,d)$
+\State $w[L(i,j,n,m)] \gets w[L(i,j,n,m)]+ aux$
 \EndIf
 \EndIf
-\State $w[L(i,j,n,m)] \gets -h^2f(x[i], y[j])+w[L(i,j,n,m)]$
+\State $w[L(i,j,n,m)] \gets-h^2f(x[i+1],y[j+1])+w[L(i,j,n,m)]$
 \EndFor
 \EndFor
 \State \textbf{return} $W_{ij}, w$
@@ -479,7 +482,35 @@ para cada $(x,y)$ en el conjunto $R=\{ (x,y)|\, 0<x<2,\, 0<y<1 \}$. Las condicio
 \begin{equation*}
 u(0,y)=0,\,u(x,0)=x,\, u(x,1)=ex,\, u(2,y)=2e^y
 \end{equation*}
-Con $n=6,\,\,m=5$, comparar las aproximaciones con la solución analítica $u(x,y)=x e^y$
+Con $n=6,\,\,m=5$, comparar las aproximaciones con la solución analítica $u(x,y)=x e^y$.\\
+Usando las funciones creadas en Python se obtiene la siguiente tabla\\
+\begin{tabular}{lrrrrrrr}
+\toprule
+{} &  $i$ &  $j$ &       $x_i$ &  $y_j$ &      $w_{ij}$ &  $u(x_i,y_j)$ &  $|u(x_i,y_j)-w_{ij}|$ \\
+\midrule
+0  &  1 &  1 &  0.333333 &  0.2 &  0.407265 &    0.407134 &           0.000130 \\
+1  &  1 &  2 &  0.333333 &  0.4 &  0.497483 &    0.497275 &           0.000208 \\
+2  &  1 &  3 &  0.333333 &  0.6 &  0.607596 &    0.607373 &           0.000223 \\
+3  &  1 &  4 &  0.333333 &  0.8 &  0.742007 &    0.741847 &           0.000160 \\
+4  &  2 &  1 &  0.666667 &  0.2 &  0.814524 &    0.814269 &           0.000255 \\
+5  &  2 &  2 &  0.666667 &  0.4 &  0.994958 &    0.994550 &           0.000408 \\
+6  &  2 &  3 &  0.666667 &  0.6 &  1.215183 &    1.214746 &           0.000437 \\
+7  &  2 &  4 &  0.666667 &  0.8 &  1.484009 &    1.483694 &           0.000315 \\
+8  &  3 &  1 &  1.000000 &  0.2 &  1.221766 &    1.221403 &           0.000363 \\
+9  &  3 &  2 &  1.000000 &  0.4 &  1.492405 &    1.491825 &           0.000580 \\
+10 &  3 &  3 &  1.000000 &  0.6 &  1.822743 &    1.822119 &           0.000624 \\
+11 &  3 &  4 &  1.000000 &  0.8 &  2.225993 &    2.225541 &           0.000452 \\
+12 &  4 &  1 &  1.333333 &  0.2 &  1.628964 &    1.628537 &           0.000427 \\
+13 &  4 &  2 &  1.333333 &  0.4 &  1.989778 &    1.989100 &           0.000679 \\
+14 &  4 &  3 &  1.333333 &  0.6 &  2.430227 &    2.429492 &           0.000735 \\
+15 &  4 &  4 &  1.333333 &  0.8 &  2.967928 &    2.967388 &           0.000540 \\
+16 &  5 &  1 &  1.666667 &  0.2 &  2.036042 &    2.035671 &           0.000371 \\
+17 &  5 &  2 &  1.666667 &  0.4 &  2.486958 &    2.486374 &           0.000584 \\
+18 &  5 &  3 &  1.666667 &  0.6 &  3.037506 &    3.036865 &           0.000641 \\
+19 &  5 &  4 &  1.666667 &  0.8 &  3.709724 &    3.709235 &           0.000489 \\
+\bottomrule
+\end{tabular}
+
 
 
 
