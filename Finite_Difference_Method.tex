@@ -59,7 +59,7 @@ El método a utilizar es una adaptación bidimensional del método de diferencia
 
 \begin{figure}[h]
 \begin{center}\label{fig::mesh}
-\includegraphics[scale=0.29]{./lattice.png} 
+\includegraphics[scale=0.25]{./lattice.png} 
 \end{center} 
 \caption{Cuadrícula de $n\times m$}
 \end{figure}
@@ -105,7 +105,7 @@ donde $w_{ij}$ aproxima $u(x_i,y_j)$. Este método tiene un error de truncación
 \begin{equation*}
 (x_{i-1},y_{j}),\,\,\,(x_{i},y_{j}),\,\,\,(x_{i},y_{j-1}),\,\text{y}\,\,(x_{i},y_{j+1}).\,\,\,
 \end{equation*}
-Utilizando la información proveída por las condiciones de contorno \ref{eq:boundary_conditions} cuando el sistema definido por \ref{eq::finite_difference} lo permite, i.e. en los puntos adyacentes al contorno definido por la cuadrícula construida previamente(\ref{fig::mesh}).\\ Con esto se obtiene un sistema de ecuaciones con una matriz de incógnitas de dimensiones $(n-1)(m-1)\times(n-1)(m-1)$ donde las incognitas son las aproximaciones $w_{ij}$ para $u(x_i,y_j)$ en los puntos interiores del retículo(\ref{fig::mesh}).\\
+Utilizando la información proveída por las condiciones de contorno \ref{eq:boundary_conditions} cuando el sistema definido por \ref{eq::finite_difference} lo permite, i.e. en los puntos adyacentes al contorno definido por la cuadrícula construida previamente(\ref{fig::mesh}), se obtiene un sistema de ecuaciones con una matriz de incógnitas de dimensiones $(n-1)(m-1)\times(n-1)(m-1)$ donde las incógnitas son las aproximaciones $w_{ij}$ para $u(x_i,y_j)$ en los puntos interiores del retículo(\ref{fig::mesh}).\\
 
 El sistema lineal para las incógnitas $w_{ij}$ se puede representar más eficientemente para realizar operaciones matriciales si se realiza una re-etiquetación de de los puntos interiores del retículo, una recomendación para realizar este esquema de re-etiquetación puede hallarse en \cite{Varga} de la siguiente manera
 \begin{equation}
@@ -115,7 +115,7 @@ donde
 \begin{equation}\label{eq::relabeling_function}
 l(i,j)=i+(m-1-j)(n-1)
 \end{equation} 
-para cada $i=1,2,\hdots,n-1$ y $j=1,2,\hdots,m-1$, con este esquema de etiquetan a los puntos interiores del retículo de izquierda a derecha y de arriba hacia abajo y con esto se asegura que el sistema lineal resultante para hallar $w_{ij}$ es una matriz con bandas de ancho máximo $2n-1$. Esta técnica fue utiliza para implementar este algoritmo en Python, ver algoritmos \ref{alg::funcL} y \ref{alg::finite_difference}.
+para cada $i=1,2,\hdots,n-1$ y $j=1,2,\hdots,m-1$, con este esquema de etiquetan a los puntos interiores del retículo de izquierda a derecha y de arriba hacia abajo y con esto se asegura que el sistema lineal resultante para hallar $w_{ij}$ es una matriz con bandas de ancho máximo $2n-1$. Esta técnica fue utilizada para implementar este algoritmo en Python, ver algoritmos \ref{alg::funcL} y \ref{alg::finite_difference}.
 
 
 
@@ -483,7 +483,7 @@ para cada $(x,y)$ en el conjunto $R=\{ (x,y)|\, 0<x<2,\, 0<y<1 \}$. Las condicio
 u(0,y)=0,\,u(x,0)=x,\, u(x,1)=ex,\, u(2,y)=2e^y
 \end{equation*}
 Con $n=6,\,\,m=5$, comparar las aproximaciones con la solución analítica $u(x,y)=x e^y$.\\
-Usando las funciones creadas en Python se obtiene la siguiente tabla\\
+Usando las funciones creadas en Python se obtiene la siguiente tabla. Esta tabla puede hallarse en el repositorio de GitHub mencionado anteriormente con el nombre \texttt{error\_table.csv}.\\
 \begin{tabular}{lrrrrrrr}
 \toprule
 {} &  $i$ &  $j$ &       $x_i$ &  $y_j$ &      $w_{ij}$ &  $u(x_i,y_j)$ &  $|u(x_i,y_j)-w_{ij}|$ \\
