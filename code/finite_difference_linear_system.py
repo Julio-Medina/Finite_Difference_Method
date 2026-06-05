@@ -20,19 +20,20 @@ from crout_factorization_generalization import Crout_generalization
 #from scipy.linalg import lu
 
 def f(x,y):
-    return x*math.exp(y)
+    return 4
+    #return x*math.exp(y)
     #return x-y
     #return 0
 
 def g(x,y,a,b,c,d):
     if x==a:
-        return 0
+        return 2*math.log(x)#0
     if x==b:
-        return 2*math.exp(y)
+        return math.log(x**2+1)#2*math.exp(y)
     if y==c:
-        return x#0#2*y+x
+        return 2*math.log(y**2+1)#x#0#2*y+x
     if y==d:
-        return math.exp(1)*x#10*x**2#200*x
+        return math.log(y**2+4)#10*x**2#200*x
     
 def l(i,j,n,m): # relabeling function
     return (i+1)+(m-1-(j+1))*(n-1)-1
@@ -102,7 +103,7 @@ def error_table(n,m,x,y,w,u):
     return csv_file_df
         
         
-a=0.0; b=2.0; c=0.0; d=1.0; n=6; m=5
+a=1.0; b=2.0; c=0.0; d=1.0; n=3; m=3
 A,w,x,y=finite_difference_linear_system(a,b,c,d,n,m,f,g)
 # solves the system using numpy
 sol=np.linalg.solve(A,w)
