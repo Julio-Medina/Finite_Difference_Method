@@ -285,5 +285,5 @@ The derivation and algorithms are based mainly on:
 ## Author
 
 **Julio A. Medina**  
-BSc. in Physics/Data Scientist  
+BSc. in Physics.  
 GitHub: [Julio-Medina](https://github.com/Julio-Medina)
