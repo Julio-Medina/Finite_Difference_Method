@@ -1,59 +1,176 @@
 # Finite Difference Method for Elliptic PDEs
 
-This repository contains a numerical implementation of the **finite difference method** for elliptic partial differential equations, with emphasis on the two-dimensional Poisson equation on a rectangular domain.
+This repository contains a Python implementation of the **finite difference method** for elliptic partial differential equations, focused on the two-dimensional Poisson equation on a rectangular domain.
 
-I originally wrote this project during my **BSc. in Physics**. The goal was not only to solve a PDE numerically, but also to make explicit the full path from the mathematical formulation to the discrete system, and from there to the algorithm used to solve it.
+I originally wrote this project during my **BSc. in Physics**. The goal was to connect the mathematical derivation of the finite-difference scheme with an actual implementation that builds the associated linear system and solves it using a direct method adapted to block tridiagonal matrices.
 
-The main problem considered is the Poisson equation:
+The main equation studied is Poisson's equation:
 
-$$
-\nabla^2 u(x,y) = \frac{\partial^2 u}{\partial x^2}(x,y) + \frac{\partial^2 u}{\partial y^2}(x,y) = f(x,y).
-$$
+```math
+\nabla^2 u(x,y)
+=
+\frac{\partial^2 u}{\partial x^2}(x,y)
++
+\frac{\partial^2 u}{\partial y^2}(x,y)
+=
+f(x,y).
+```
 
-The equation is solved on a rectangular region:
+The equation is solved on the rectangular domain:
 
-$$
-R = \{(x,y) \mid a < x < b,\; c < y < d\}.
-$$
+```math
+\Omega = \{(x,y)\in\mathbb{R}^2 : a < x < b,\; c < y < d\}.
+```
 
-The boundary condition is Dirichlet type:
+The boundary condition is a Dirichlet condition:
 
-$$
-u(x,y) = g(x,y) \quad \text{on the boundary of } R.
-$$
+```math
+u(x,y)=g(x,y), \qquad (x,y)\in\partial\Omega.
+```
 
-The repository includes both the Python implementation and a LaTeX report explaining the mathematical derivation.
+The repository includes the Python implementation and the original LaTeX report explaining the derivation, algorithms, and examples.
 
-> **GitHub Markdown note:** equations are intentionally kept out of section titles because GitHub does not reliably render LaTeX inside headings.
+> GitHub README note: all equations are written with fenced `math` blocks instead of inline dollar signs. This avoids the usual GitHub rendering failures caused by equations inside headings, tables, bold text, or punctuation-heavy paragraphs.
 
 ---
 
-## What this project does
+## What the code does
 
-The code builds the finite-difference approximation of the Poisson equation by discretizing a rectangular domain into an `n x m` grid. The interior points of the grid become the unknowns of a linear system.
+The code discretizes a rectangular domain into a uniform grid and approximates the unknown solution only at the interior grid points. These interior values become the unknowns of a linear system.
 
-For each interior point, the method uses the standard centered-difference approximation:
+Given positive integers `n` and `m`, the step sizes are:
 
-$$
-2\left[\left(\frac{h}{k}\right)^2 + 1\right]w_{ij}
-- \left(w_{i+1,j} + w_{i-1,j}\right)
-- \left(\frac{h}{k}\right)^2\left(w_{i,j+1} + w_{i,j-1}\right)
-= -h^2 f(x_i,y_j).
-$$
+```math
+h = \frac{b-a}{n},
+\qquad
+k = \frac{d-c}{m}.
+```
 
-Here, the numerical value is an approximation to the exact solution:
+The grid points are:
 
-$$
-w_{ij} \approx u(x_i,y_j).
-$$
+```math
+x_i = a + ih,
+\qquad
+0 \leq i \leq n,
+```
 
-After applying the boundary conditions, the discretized problem becomes a linear system:
+```math
+y_j = c + jk,
+\qquad
+0 \leq j \leq m.
+```
 
-$$
-Aw = b.
-$$
+At each interior point, the numerical approximation is denoted by:
 
-A key point of the implementation is that the unknowns are relabeled so that the coefficient matrix has a **block tridiagonal structure**. This makes it natural to solve the system using a generalization of the Crout factorization algorithm for block tridiagonal matrices.
+```math
+w_{ij} \approx u(x_i,y_j),
+\qquad
+1 \leq i \leq n-1,
+\qquad
+1 \leq j \leq m-1.
+```
+
+Using centered finite differences for the second derivatives gives:
+
+```math
+\frac{u(x_{i+1},y_j)-2u(x_i,y_j)+u(x_{i-1},y_j)}{h^2}
++
+\frac{u(x_i,y_{j+1})-2u(x_i,y_j)+u(x_i,y_{j-1})}{k^2}
+\approx
+f(x_i,y_j).
+```
+
+Replacing the exact values by the approximations `w_ij` gives the finite-difference equation used in the code:
+
+```math
+2\left[\left(\frac{h}{k}\right)^2+1\right]w_{ij}
+-
+w_{i+1,j}
+-
+w_{i-1,j}
+-
+\left(\frac{h}{k}\right)^2w_{i,j+1}
+-
+\left(\frac{h}{k}\right)^2w_{i,j-1}
+=
+-h^2 f(x_i,y_j).
+```
+
+The boundary values are known from the function `g`:
+
+```math
+w_{0j}=g(x_0,y_j),
+\qquad
+w_{nj}=g(x_n,y_j),
+\qquad
+0 \leq j \leq m,
+```
+
+```math
+w_{i0}=g(x_i,y_0),
+\qquad
+w_{im}=g(x_i,y_m),
+\qquad
+1 \leq i \leq n-1.
+```
+
+After the boundary terms are moved to the right-hand side, the full problem becomes a linear system:
+
+```math
+A\mathbf{w}=\mathbf{b}.
+```
+
+The truncation error of the centered second-order finite-difference scheme is:
+
+```math
+O(h^2+k^2).
+```
+
+---
+
+## Indexing convention
+
+The mathematical report uses a one-indexed relabeling of the interior grid points. The Python code uses a zero-indexed version of the same idea.
+
+For interior grid indices written in Python style,
+
+```math
+0 \leq i \leq n-2,
+\qquad
+0 \leq j \leq m-2,
+```
+
+the code maps the two-dimensional interior grid point to a single linear index with:
+
+```math
+L(i,j,n,m)
+=
+(i+1)+(m-1-(j+1))(n-1)-1.
+```
+
+This labels the interior grid from left to right and from top to bottom. With this ordering, the matrix generated by the five-point stencil has a block tridiagonal structure.
+
+---
+
+## Linear solver
+
+The matrix produced by the finite-difference discretization is not treated as an arbitrary dense matrix. Because the grid relabeling preserves the block tridiagonal structure, the project includes a direct solver based on a generalized Crout factorization for block tridiagonal matrices.
+
+The implemented solver is:
+
+```python
+Crout_generalization(A, K, n)
+```
+
+where:
+
+| Argument | Meaning |
+|---|---|
+| `A` | Coefficient matrix of the finite-difference linear system. |
+| `K` | Right-hand-side vector. |
+| `n` | Block size used by the block tridiagonal solver. |
+
+The original report also discusses the SOR method as an iterative alternative, but the current Python code focuses on the finite-difference system builder and the Crout-based direct solver.
 
 ---
 
@@ -61,7 +178,7 @@ A key point of the implementation is that the unknowns are relabeled so that the
 
 ```text
 .
-├── Finite_Difference_Method.tex          # Main LaTeX report
+├── Finite_Difference_Method.tex          # Original LaTeX report
 ├── Finite_Difference_Method.pdf          # Compiled report
 ├── lattice.png                           # Grid diagram used in the report
 ├── Diagram1.dia                          # Source diagram file
@@ -78,67 +195,11 @@ The most important files are:
 
 | File | Description |
 |---|---|
-| `code/finite_difference_linear_system.py` | Builds the finite-difference linear system for the Poisson equation and runs an example. |
-| `code/crout_factorization_generalization.py` | Implements the Crout generalization for block tridiagonal matrices. |
-| `Finite_Difference_Method.tex` | Mathematical report with the derivation, algorithms, and examples. |
+| `code/finite_difference_linear_system.py` | Builds the finite-difference linear system and runs an example. |
+| `code/crout_factorization_generalization.py` | Implements the generalized Crout solver for block tridiagonal matrices. |
+| `Finite_Difference_Method.tex` | Original mathematical report with the derivation and examples. |
 | `Finite_Difference_Method.pdf` | Compiled version of the report. |
-| `code/error_table.csv` | Example output comparing numerical and analytical values. |
-
----
-
-## Numerical method
-
-The finite difference method is applied to the Poisson equation by replacing the second derivatives with centered finite differences.
-
-The step sizes are:
-
-$$
-h = \frac{b-a}{n}, \qquad k = \frac{d-c}{m}.
-$$
-
-The truncation error of this discretization is of order:
-
-$$
-O(h^2 + k^2).
-$$
-
-The implementation then maps every interior grid point to a single linear index. This transforms the two-dimensional grid problem into a matrix problem while preserving the sparse block structure produced by the finite-difference stencil.
-
-The relabeling function used in the code is:
-
-$$
-l(i,j) = (i+1) + (m-1-(j+1))(n-1) - 1.
-$$
-
-This is the zero-indexed version used directly in Python.
-
----
-
-## Linear solver
-
-The resulting matrix is block tridiagonal. Instead of treating the system as a completely general dense linear system, the repository includes an implementation of a **generalized Crout factorization** for block tridiagonal matrices.
-
-The solver is implemented in:
-
-```text
-code/crout_factorization_generalization.py
-```
-
-The core function is:
-
-```python
-Crout_generalization(A, K, n)
-```
-
-where:
-
-| Argument | Meaning |
-|---|---|
-| `A` | Coefficient matrix of the linear system. |
-| `K` | Constant vector. |
-| `n` | Block size of the block tridiagonal matrix. |
-
-The report also discusses the SOR method as an alternative iterative approach, although the current Python implementation focuses on the finite-difference system construction and the Crout-based direct solver.
+| `code/error_table.csv` | Output table comparing numerical and analytical values for an example problem. |
 
 ---
 
@@ -157,13 +218,13 @@ Install the required Python packages:
 pip install numpy pandas
 ```
 
-Run the finite-difference example:
+Run the example script:
 
 ```bash
 python finite_difference_linear_system.py
 ```
 
-The script defines a rectangular domain, builds the linear system, solves it with both `numpy.linalg.solve` and the Crout generalization, and writes an error table to CSV.
+The script builds the finite-difference system, solves it with both `numpy.linalg.solve` and the generalized Crout solver, and writes an error table to CSV.
 
 ---
 
@@ -175,22 +236,22 @@ The script defines a rectangular domain, builds the linear system, solves it wit
 finite_difference_linear_system(a, b, c, d, n, m, f, g)
 ```
 
-Builds the matrix system associated with the finite-difference discretization.
+This function constructs the matrix system associated with the finite-difference discretization of the Poisson equation.
 
 | Argument | Meaning |
 |---|---|
-| `a, b, c, d` | Rectangular domain limits. |
-| `n, m` | Number of grid subdivisions in the x and y directions. |
+| `a, b, c, d` | Limits of the rectangular domain. |
+| `n, m` | Number of subdivisions in the x and y directions. |
 | `f` | Right-hand side of the Poisson equation. |
 | `g` | Boundary-condition function. |
 
-Returns:
+It returns:
 
 ```python
 A, w, x, y
 ```
 
-where `A` is the coefficient matrix, `w` is the constant vector, and `x`, `y` are the grid coordinates.
+where `A` is the coefficient matrix, `w` is the right-hand-side vector, and `x`, `y` contain the grid coordinates.
 
 ### Crout generalization solver
 
@@ -198,7 +259,7 @@ where `A` is the coefficient matrix, `w` is the constant vector, and `x`, `y` ar
 Crout_generalization(A, K, n)
 ```
 
-Solves a block tridiagonal linear system using the generalized Crout factorization.
+This function solves a block tridiagonal linear system using the generalized Crout factorization.
 
 ### Error table generator
 
@@ -206,31 +267,57 @@ Solves a block tridiagonal linear system using the generalized Crout factorizati
 error_table(n, m, x, y, w, u)
 ```
 
-Compares the numerical approximation with an analytical solution and exports the result as `error_table.csv`.
+This function compares the numerical approximation with an analytical solution and exports the result as `error_table.csv`.
 
 ---
 
 ## Example problem
 
-One of the examples in the report solves the following PDE:
+One of the useful test problems in the report is:
 
-$$
+```math
 \frac{\partial^2 u}{\partial x^2}(x,y)
 +
 \frac{\partial^2 u}{\partial y^2}(x,y)
 =
-x e^y.
-$$
+x e^y,
+```
 
-The boundary conditions are chosen so that the analytical solution is:
+on the domain:
 
-$$
-u(x,y) = x e^y.
-$$
+```math
+0 < x < 2,
+\qquad
+0 < y < 1.
+```
 
-This makes it possible to compare the numerical approximation against the exact solution and compute the absolute error at each interior grid point.
+The boundary conditions are chosen from the exact solution:
 
-The output table has the form:
+```math
+u(x,y)=x e^y.
+```
+
+Therefore:
+
+```math
+u(0,y)=0,
+\qquad
+u(x,0)=x,
+\qquad
+u(x,1)=ex,
+\qquad
+u(2,y)=2e^y.
+```
+
+This makes the example useful for validation because the numerical approximation can be compared directly against the analytical value at each interior point.
+
+The error is computed as:
+
+```math
+\left|u(x_i,y_j)-w_{ij}\right|.
+```
+
+The generated output table contains:
 
 | Column | Meaning |
 |---|---|
@@ -238,20 +325,33 @@ The output table has the form:
 | `x_i`, `y_j` | Coordinates of the grid point. |
 | `w_ij` | Numerical approximation. |
 | `u(x_i,y_j)` | Analytical value. |
-| `absolute_error` | Absolute error between the analytical and numerical values. |
+| `|u(x_i,y_j)-w_ij|` | Absolute error. |
+
+---
+
+## Notes on the original report
+
+While reviewing the LaTeX report and the code, I found a few notation issues that are worth keeping visible instead of hiding them:
+
+- The grid definition in the report writes `y=a+jk`, but it should be `y_j=c+jk`.
+- Some centered-difference formulas use `(x_i,y_i)` where the consistent notation should be `(x_i,y_j)`.
+- In Example 1, the text says there are 9 variables but lists `w_1,w_2,w_3,w_4,w_5,w_7,w_8,w_9`, skipping `w_6`.
+- The second example in the report appears inconsistent: the stated domain, boundary conditions, and logarithmic functions do not line up cleanly. I would review that example before using it as a final reference.
+- The SOR algorithm section originally repeats the Crout algorithm label in the LaTeX source.
 
 ---
 
 ## Why this project matters to me
 
-This project is a good example of the kind of numerical work I enjoy: starting from the mathematical formulation, deriving the discrete approximation, writing the algorithm, and then validating the result computationally.
+This project is a good example of the numerical work I enjoy: starting from the mathematical formulation, deriving the discrete approximation, writing the algorithm, and validating the result computationally.
 
-It also connects several ideas that are important in computational physics and numerical analysis:
+It connects several ideas from computational physics and numerical analysis:
 
 - finite-difference discretization of PDEs,
-- construction of structured linear systems,
 - boundary-value problems,
-- direct solvers for block tridiagonal matrices,
+- structured linear systems,
+- block tridiagonal matrices,
+- direct solvers,
 - comparison between numerical and analytical solutions.
 
 The current version is intentionally simple and educational. A future refactor could turn it into a cleaner Python package with tests, examples, plotting utilities, and support for additional solvers.
@@ -285,5 +385,5 @@ The derivation and algorithms are based mainly on:
 ## Author
 
 **Julio A. Medina**  
-BSc. in Physics.  
+BSc. in Physics / Data Scientist  
 GitHub: [Julio-Medina](https://github.com/Julio-Medina)
