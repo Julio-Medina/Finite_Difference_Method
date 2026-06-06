@@ -1,0 +1,15 @@
+\BOOKMARK [1][-]{section.1}{Elliptic partial differential equations}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Choosing a mesh}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Finite Difference Method}{section.1}% 3
+\BOOKMARK [1][-]{section.2}{Finite Difference Method Algorithm for Poisson's Equation}{}% 4
+\BOOKMARK [2][-]{subsection.2.1}{Finite difference algorithm: linear system}{section.2}% 5
+\BOOKMARK [3][-]{subsubsection.2.1.1}{Relabeling function l}{subsection.2.1}% 6
+\BOOKMARK [3][-]{subsubsection.2.1.2}{Associated linear system}{subsection.2.1}% 7
+\BOOKMARK [2][-]{subsection.2.2}{Generalized Crout factorization algorithm for block-tridiagonal matrices}{section.2}% 8
+\BOOKMARK [2][-]{subsection.2.3}{Iterative SOR method for solving linear systems}{section.2}% 9
+\BOOKMARK [2][-]{subsection.2.4}{Finite differences using generalized Crout factorization}{section.2}% 10
+\BOOKMARK [2][-]{subsection.2.5}{Finite differences using the SOR relaxation method}{section.2}% 11
+\BOOKMARK [2][-]{subsection.2.6}{Examples}{section.2}% 12
+\BOOKMARK [3][-]{subsubsection.2.6.1}{Example 1}{subsection.2.6}% 13
+\BOOKMARK [3][-]{subsubsection.2.6.2}{Example 2}{subsection.2.6}% 14
+\BOOKMARK [3][-]{subsubsection.2.6.3}{Example 3}{subsection.2.6}% 15
