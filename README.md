@@ -2,21 +2,21 @@
 
 This repository contains a numerical implementation of the **finite difference method** for elliptic partial differential equations, with emphasis on the two-dimensional Poisson equation on a rectangular domain.
 
-I originally wrote this project as part of my graduate work in physics. The goal was not only to solve a PDE numerically, but also to make explicit the full path from the mathematical discretization to the matrix system and then to the algorithm used to solve it.
+I originally wrote this project during my **BSc. in Physics**. The goal was not only to solve a PDE numerically, but also to make explicit the full path from the mathematical formulation to the discrete system, and from there to the algorithm used to solve it.
 
-The main problem considered is
-
-$$
-\nabla^2 u(x,y) = \frac{\partial^2 u}{\partial x^2}(x,y) + \frac{\partial^2 u}{\partial y^2}(x,y) = f(x,y),
-$$
-
-on a rectangular region
+The main problem considered is the Poisson equation:
 
 $$
-R = \{(x,y) \mid a < x < b,\; c < y < d\},
+\nabla^2 u(x,y) = \frac{\partial^2 u}{\partial x^2}(x,y) + \frac{\partial^2 u}{\partial y^2}(x,y) = f(x,y).
 $$
 
-with Dirichlet boundary conditions
+The equation is solved on a rectangular region:
+
+$$
+R = \{(x,y) \mid a < x < b,\; c < y < d\}.
+$$
+
+The boundary condition is Dirichlet type:
 
 $$
 u(x,y) = g(x,y) \quad \text{on the boundary of } R.
@@ -24,24 +24,30 @@ $$
 
 The repository includes both the Python implementation and a LaTeX report explaining the mathematical derivation.
 
+> **GitHub Markdown note:** equations are intentionally kept out of section titles because GitHub does not reliably render LaTeX inside headings.
+
 ---
 
 ## What this project does
 
-The code builds the finite-difference approximation of the Poisson equation by discretizing a rectangular domain into an \(n \times m\) grid. The interior points of the grid become the unknowns of a linear system.
+The code builds the finite-difference approximation of the Poisson equation by discretizing a rectangular domain into an `n x m` grid. The interior points of the grid become the unknowns of a linear system.
 
-For each interior point \((x_i, y_j)\), the method uses the standard centered-difference approximation
+For each interior point, the method uses the standard centered-difference approximation:
 
 $$
 2\left[\left(\frac{h}{k}\right)^2 + 1\right]w_{ij}
 - \left(w_{i+1,j} + w_{i-1,j}\right)
 - \left(\frac{h}{k}\right)^2\left(w_{i,j+1} + w_{i,j-1}\right)
-= -h^2 f(x_i,y_j),
+= -h^2 f(x_i,y_j).
 $$
 
-where \(w_{ij}\) approximates the exact solution \(u(x_i,y_j)\).
+Here, the numerical value is an approximation to the exact solution:
 
-After applying the boundary conditions, the discretized problem becomes a linear system
+$$
+w_{ij} \approx u(x_i,y_j).
+$$
+
+After applying the boundary conditions, the discretized problem becomes a linear system:
 
 $$
 Aw = b.
@@ -82,27 +88,29 @@ The most important files are:
 
 ## Numerical method
 
-The finite difference method is applied to the Poisson equation by replacing the second derivatives with centered finite differences. The step sizes are
+The finite difference method is applied to the Poisson equation by replacing the second derivatives with centered finite differences.
+
+The step sizes are:
 
 $$
 h = \frac{b-a}{n}, \qquad k = \frac{d-c}{m}.
 $$
 
-The truncation error of this discretization is of order
+The truncation error of this discretization is of order:
 
 $$
 O(h^2 + k^2).
 $$
 
-The implementation then maps every interior grid point \((x_i,y_j)\) to a single linear index. This transforms the two-dimensional grid problem into a matrix problem while preserving the sparse block structure produced by the finite-difference stencil.
+The implementation then maps every interior grid point to a single linear index. This transforms the two-dimensional grid problem into a matrix problem while preserving the sparse block structure produced by the finite-difference stencil.
 
-The relabeling function used in the code is
+The relabeling function used in the code is:
 
 $$
-l(i,j) = (i+1) + (m-1-(j+1))(n-1) - 1,
+l(i,j) = (i+1) + (m-1-(j+1))(n-1) - 1.
 $$
 
-which is the zero-indexed version used directly in Python.
+This is the zero-indexed version used directly in Python.
 
 ---
 
@@ -161,7 +169,7 @@ The script defines a rectangular domain, builds the linear system, solves it wit
 
 ## Main functions
 
-### `finite_difference_linear_system`
+### Finite-difference system builder
 
 ```python
 finite_difference_linear_system(a, b, c, d, n, m, f, g)
@@ -184,7 +192,7 @@ A, w, x, y
 
 where `A` is the coefficient matrix, `w` is the constant vector, and `x`, `y` are the grid coordinates.
 
-### `Crout_generalization`
+### Crout generalization solver
 
 ```python
 Crout_generalization(A, K, n)
@@ -192,7 +200,7 @@ Crout_generalization(A, K, n)
 
 Solves a block tridiagonal linear system using the generalized Crout factorization.
 
-### `error_table`
+### Error table generator
 
 ```python
 error_table(n, m, x, y, w, u)
@@ -204,17 +212,17 @@ Compares the numerical approximation with an analytical solution and exports the
 
 ## Example problem
 
-One of the examples in the report solves
+One of the examples in the report solves the following PDE:
 
 $$
 \frac{\partial^2 u}{\partial x^2}(x,y)
 +
 \frac{\partial^2 u}{\partial y^2}(x,y)
 =
-x e^y,
+x e^y.
 $$
 
-with boundary conditions chosen so that the analytical solution is
+The boundary conditions are chosen so that the analytical solution is:
 
 $$
 u(x,y) = x e^y.
@@ -230,7 +238,7 @@ The output table has the form:
 | `x_i`, `y_j` | Coordinates of the grid point. |
 | `w_ij` | Numerical approximation. |
 | `u(x_i,y_j)` | Analytical value. |
-| `\|u(x_i,y_j)-w_ij\|` | Absolute error. |
+| `absolute_error` | Absolute error between the analytical and numerical values. |
 
 ---
 
